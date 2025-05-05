@@ -14,6 +14,19 @@ export const getAllUsers = async (req, res) => {
     }
 }
 
+export const getAllUsersId = async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const usersId = await prisma.user.findMany({
+            where: { id: Number(id)}
+        })
+        res.status(200).json(usersId)
+    } catch (error) {
+        res.status(400).json({mensagem: `Erro ao verificar usuários por id: ${error.message}`})
+    }
+}
+
 export const postCreateUsers = async (req, res) => {
     try {
         const { name, email } = req.body
