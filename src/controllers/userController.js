@@ -18,7 +18,7 @@ export const getAllUsersId = async (req, res) => {
     const { id } = req.params
 
     try {
-        const usersId = await prisma.user.findMany({
+        const usersId = await prisma.user.findUnique({
             where: { id: Number(id)}
         })
         res.status(200).json(usersId)
