@@ -28,7 +28,10 @@ export const validate = (schema) => {
         // Chamo p próximo agente(middleware)
         next()
         } catch (error) {
-            return res.status(400).json({mensagem: `Erro de validação: ${error.message}`})
+            return res.status(400).json({mensagem: `Erro de validação: ${error.errors.map(e => ({
+                path: e.path,
+                message: e.message
+            }))}`})
         }
     }
 }
