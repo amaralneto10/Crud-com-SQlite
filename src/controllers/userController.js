@@ -1,9 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
-
-// export const getAllUsers = (req, res) => {
-//     res.status(200).json({mensagem: "Rota GET usuários funcionando!"})
-// }
+import bcrypt from 'bcrypt'
+import { generateToken, hashPassword } from '../utils/auth.js'
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -69,5 +67,35 @@ export const deleteUsers = async (req, res) => {
         res.status(204)
     } catch (error) {
         res.status(400).json(`Erro em deletar: ${error.message}`)
+    }
+}
+
+// ROTA PARA REGISTRAR USUÁRIO
+export const register = async (req, res) => {
+    const { name, email, password } = req.body
+
+    try {
+        // Criar senha usuário criptografada
+        const hashedPassword = await hashPassword(password)
+
+        // Cria usuário no banco de dados
+        const newRegister = await prisma.user.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword
+            }
+        })
+
+        // Gerar um token JWT
+        const token = generateToken(newRegister)
+
+        res.status(201).json({
+            name: newRegister.name,
+            email: newRegister.email,
+            token
+        })
+    } catch (error) {
+        res.status(400).json({mensagem: `Erro ao criar usuário: ${error.message}`})
     }
 }
