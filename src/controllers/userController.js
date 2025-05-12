@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 import bcrypt from 'bcrypt'
-import { generateToken, hashPassword } from '../utils/auth.js'
+import { comparePassword, generateToken, hashPassword } from '../utils/auth.js'
 
 export const getAllUsers = async (req, res) => {
     try {
@@ -97,5 +97,44 @@ export const register = async (req, res) => {
         })
     } catch (error) {
         res.status(400).json({mensagem: `Erro ao criar usuário: ${error.message}`})
+    }
+}
+
+export const login = async (req, res) => {
+
+    const { email, password } = req.body
+
+    try {
+        // 01. Buscar usuário por email
+
+        const user = await prisma.user.findUnique({
+            where: { email } 
+        })
+
+        if (!user) {
+            res.status(401).json({mensagem: "Credenciais inválidas!"})
+            return
+        }
+
+        // 02. Comparar a senha fornecida com a senha hash armazenada
+
+        const passwordMatch = await comparePassword(password, user.password)
+
+        if (!passwordMatch) {
+            res.status(401).json({mensagem: "Credenciais inválidas!"})
+            return
+        }
+
+        // 03. Gerar token JWT
+
+        const token = generateToken(user)
+
+        // 04. Envia como resposta o usuário e o token
+
+        res.json({usuário: {name: user.name, email: user.email},
+        token})
+
+    } catch (error) {
+        res.status(500).json({mensagem: `Erro no login: ${error.message}`})
     }
 }

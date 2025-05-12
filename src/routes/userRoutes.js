@@ -1,7 +1,7 @@
 import express from 'express'
-import { getAllUsers, postCreateUsers, deleteUsers, updateUser, getAllUsersId, register } from '../controllers/userController.js'
+import { getAllUsers, postCreateUsers, deleteUsers, updateUser, getAllUsersId, register, login } from '../controllers/userController.js'
 import { validate } from '../middleware/validate.js'
-import { createUserSchema, updateUserSchema } from '../schemas/userSchemas.js'
+import { createUserSchema, loginSchema, updateUserSchema } from '../schemas/userSchemas.js'
 
 const router = express.Router()
 
@@ -16,5 +16,7 @@ router.delete('/:id', deleteUsers)
 router.get('/:id', getAllUsersId)
 
 router.post('/register', register)
+
+router.post('/login', validate(loginSchema), login)
 
 export default router

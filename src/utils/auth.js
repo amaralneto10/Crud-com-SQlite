@@ -14,3 +14,7 @@ export const generateToken = (user) => {
         {expiresIn: "1h"}
         )
 }
+
+export const comparePassword = async (password, hashedPassword) => {
+    return await bcrypt.compare(password, hashedPassword)
+}
