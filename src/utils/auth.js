@@ -18,3 +18,7 @@ export const generateToken = (user) => {
 export const comparePassword = async (password, hashedPassword) => {
     return await bcrypt.compare(password, hashedPassword)
 }
+
+export const verifyToken = (token) => {
+    return jwt.verify(token, JWT_SECRET)
+}
